@@ -1,0 +1,30 @@
+img_f = img.astype(np.float32)
+
+# 1. Laplacian Filter
+lap_raw = cv2.Laplacian(img_f, cv2.CV_32F, ksize=3)
+laplacian_vis = np.clip(np.abs(lap_raw), 0, 255).astype(np.uint8)
+
+# 2. Sobel Filter 
+sobel_x = cv2.Sobel(img_f, cv2.CV_32F, 1, 0, ksize=3)
+sobel_y = cv2.Sobel(img_f, cv2.CV_32F, 0, 1, ksize=3)
+sobel_mag = np.clip(np.hypot(sobel_x, sobel_y), 0, 255).astype(np.uint8)
+
+# 3. High-Boost Filter
+A = 1.8  # Boost factor (A = 1 -> original, A > 1 -> high-boost sharpening)
+blurred_for_hb = cv2.GaussianBlur(img_f, (5, 5), sigmaX=1.5)
+high_boost = np.clip(A * img_f - blurred_for_hb, 0, 255).astype(np.uint8)
+
+edge_sharp = [
+    ("Original", img),
+    ("Laplacian |∇²f|", laplacian_vis),
+    ("Sobel Magnitude", sobel_mag),
+    (f"High-Boost (A={A})", high_boost),
+]
+
+fig, axes = plt.subplots(1, 4, figsize=(15, 4))
+for ax, (title, im) in zip(axes, edge_sharp):
+  ax.imshow(im, cmap="gray", vmin=0, vmax=255)
+  ax.set_title(title)
+  ax.axis("off")
+plt.tight_layout()
+plt.show()
