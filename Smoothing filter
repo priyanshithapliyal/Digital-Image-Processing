@@ -1,0 +1,31 @@
+# 1. Mean / Averaging Filter (uniform kernel)
+mean_filter = cv2.blur(img, (5, 5))
+
+# 2. Weighted Averaging Filter (center-weighted kernel)
+weighted_kernel = np.array(
+    [[1, 2, 1], [2, 4, 2], [1, 2, 1]], dtype=np.float32
+)
+weighted_kernel /= weighted_kernel.sum()
+weighted_avg = cv2.filter2D(img, -1, weighted_kernel)
+
+# 3. Gaussian Filter
+gaussian_filter = cv2.GaussianBlur(img, (5, 5), sigmaX=1.5)
+
+# 4. Median Filter (great for salt-and-pepper noise)
+median_filter = cv2.medianBlur(img, 5)
+
+spatial_smooth = [
+    ("Original", img),
+    ("Mean (5x5)", mean_filter),
+    ("Weighted Avg (3x3)", weighted_avg),
+    ("Gaussian (5x5, σ=1.5)", gaussian_filter),
+    ("Median (5x5)", median_filter),
+]
+
+fig, axes = plt.subplots(1, 5, figsize=(18, 4))
+for ax, (title, im) in zip(axes, spatial_smooth):
+  ax.imshow(im, cmap="gray", vmin=0, vmax=255)
+  ax.set_title(title)
+  ax.axis("off")
+plt.tight_layout()
+plt.show()
