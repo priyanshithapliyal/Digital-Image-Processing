@@ -1,0 +1,29 @@
+%matplotlib inline
+
+import cv2
+import matplotlib.pyplot as plt
+import numpy as np
+
+# Load a grayscale image (falls back to a synthetic pattern if 'sample.jpg' isn't found)
+img = cv2.imread("output-onlinejpgtools.jpg", cv2.IMREAD_GRAYSCALE)
+
+if img is None:
+  h, w = 256, 256
+  y, x = np.mgrid[0:h, 0:w]
+  img = np.zeros((h, w), dtype=np.uint8)
+  img[40:120, 40:140] = 200
+  cv2.circle(img, (180, 170), 45, 140, -1)
+  cv2.line(img, (20, 220), (235, 30), 255, 3)
+  # Add mild salt-and-pepper and Gaussian noise so denoising filters are easy to inspect
+  rng = np.random.default_rng(42)
+  noisy = img.astype(np.float32) + rng.normal(0, 12, img.shape)
+  salt_pepper = rng.random(img.shape)
+  noisy[salt_pepper < 0.01] = 255
+  noisy[salt_pepper > 0.99] = 0
+  img = np.clip(noisy, 0, 255).astype(np.uint8)
+
+plt.figure(figsize=(4, 4))
+plt.imshow(img, cmap="gray")
+plt.title("Input Image")
+plt.axis("off")
+plt.show()
