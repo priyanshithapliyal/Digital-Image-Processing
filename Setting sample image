@@ -4,7 +4,6 @@ import cv2
 import matplotlib.pyplot as plt
 import numpy as np
 
-# Load a grayscale image (falls back to a synthetic pattern if 'sample.jpg' isn't found)
 img = cv2.imread("output-onlinejpgtools.jpg", cv2.IMREAD_GRAYSCALE)
 
 if img is None:
