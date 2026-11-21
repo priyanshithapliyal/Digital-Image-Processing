@@ -1,0 +1,61 @@
+message = "ABCA"
+
+from collections import Counter
+frequency = Counter(message)
+total = len(message)
+
+probability = {}
+
+for char in sorted(frequency):
+    probability[char] = frequency[char] / total
+
+print("Probabilities:", probability)
+
+low = 0.0
+ranges = {}
+
+for char, prob in probability.items():
+    high = low + prob
+    ranges[char] = (low, high)
+    low = high
+
+print("\nCharacter Ranges:")
+for char, r in ranges.items():
+    print(char, ":", r)
+
+low = 0.0
+high = 1.0
+
+for char in message:
+    range_width = high - low
+
+    char_low, char_high = ranges[char]
+
+    high = low + range_width * char_high
+    low = low + range_width * char_low
+
+encoded_value = (low + high) / 2
+
+print("\nOriginal Message:", message)
+print("Encoded Value:", encoded_value)
+print("Final Interval:", low, high)
+
+value = encoded_value
+decoded_message = ""
+
+for i in range(len(message)):
+
+    for char, (char_low, char_high) in ranges.items():
+
+        if char_low <= (value - low) / (high - low) < char_high:
+            decoded_message += char
+
+            old_low = low
+            old_high = high
+
+            high = old_low + (old_high - old_low) * char_high
+            low = old_low + (old_high - old_low) * char_low
+
+            break
+
+print("Decoded Message:", decoded_message)
